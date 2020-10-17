@@ -19,20 +19,18 @@ int main(int argc, char *argv[])
     case 0:
         // Codigo del proceso hijo
         system(argv[1]);
+        exit(0);
     case -1:
         // Error
         break;
     }
     wait(NULL); // Ensayarlo sin comentarlo y comentandolo a ver que pasa
-    if (code != 0)
-    {
-        gettimeofday(&current_time, NULL);
-        second2 = current_time.tv_sec;
-        microsec2 = current_time.tv_usec;
-        int secondsTime = second2 - second1;
-        int microsecTime = microsec2 - microsec1;
-        printf("Elapsed time : %i,%i\n", secondsTime, microsecTime);
-    }
+    gettimeofday(&current_time, NULL);
+    second2 = current_time.tv_sec;
+    microsec2 = current_time.tv_usec;
+    int secondsTime = second2 - second1;
+    int microsecTime = microsec2 - microsec1;
+    printf("Elapsed time : %i,%i\n", secondsTime, microsecTime);
 
     return 0;
 }

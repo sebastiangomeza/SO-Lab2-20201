@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         microsec2 = current_time.tv_usec;
         int secondsTime = second2 - second1;
         int microsecTime = microsec2 - microsec1;
-        printf("time:%i,%i\n", secondsTime, microsecTime);
+        printf("Elapsed time : %i,%i\n", secondsTime, microsecTime);
     }
 
     return 0;

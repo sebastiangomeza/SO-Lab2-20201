@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <string.h>
 
 int main(int argc, char *argv[])
 {
@@ -14,11 +15,15 @@ int main(int argc, char *argv[])
     int microsec1 = current_time.tv_usec;
     int microsec2;
     int code = fork();
+    char *myargs[2];
     switch (code)
     {
     case 0:
         // Codigo del proceso hijo
-        system(argv[1]);
+        myargs[0] = argv[1];
+        myargs[1] = NULL;
+        execvp(myargs[0], myargs);
+        //system(argv[1]);
         exit(0);
     case -1:
         // Error

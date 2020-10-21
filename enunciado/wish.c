@@ -60,8 +60,6 @@ int main(int argc, char *argv[])
                     //printf("in array: %s\n", commandsAndArguments[i]);
                 }
 
-                //printf("Array %s: \n", commandsAndArguments);
-
                 printf("in array 0: %s\n", commandsAndArguments[0]);
                 printf("in array 1: %s\n", commandsAndArguments[1]);
 
@@ -73,7 +71,12 @@ int main(int argc, char *argv[])
                     //[strlen(commandsAndArguments[1]) - 1];
                     if(chdir(argument) == -1 ){
                         write(STDERR_FILENO, error_message, strlen(error_message));
+                    }else{
+                        char s[100];
+                        printf("Ubicación después de CD: %s\n", getcwd(s, 100));
                     }
+
+
                 }else{
                     printf("Comando diferente");
                 }

@@ -6,6 +6,8 @@
 #include <sys/time.h>
 #include <string.h>
 
+char** separador(char *lineaComando, char **comandReturn);
+
 int main(int argc, char *argv[])
 {
     char error_message[30] = "An error has occurred\n";
@@ -13,7 +15,7 @@ int main(int argc, char *argv[])
     char *strCd = "cd ";
     //int size = 1;
     //char commandsArguments[size];
-    char *word;
+    //
     /*
     char *mypath[] = {
         "/bin",
@@ -43,39 +45,21 @@ int main(int argc, char *argv[])
                 exit(0);
             }else{
 
-                int count = 0;
-                char *lineCopy = NULL;
-                lineCopy = strdup(line);
-
-                while ((word = strsep(&lineCopy, " ")) != NULL) {
-                    count++;
-                    //printf("W1 word: %s\n", word);
-                    //printf("Count: %i\n", count);
-                }
-
-                char *commandsAndArguments[count];
-                for(int i=0; (word = strsep(&line, " ")) != NULL; i++ ){
-                    commandsAndArguments[i] = word;
-                    //printf("word: %s\n", word);
-                    //printf("in array: %s\n", commandsAndArguments[i]);
-                }
-
-                printf("in array 0: %s\n", commandsAndArguments[0]);
-                printf("in array 1: %s\n", commandsAndArguments[1]);
+                //Aquí va el método separador
+                char **commandsAndArguments;
+                commandsAndArguments = separador(line, commandsAndArguments);
 
                 if(strcmp(commandsAndArguments[0], strCd)){
+
                     char *argument = NULL;
                     argument = strdup(commandsAndArguments[1]);
-                    //argument[strlen(argument) - 1] = '\0';
                     printf("word: %s\n", argument);
-                    //[strlen(commandsAndArguments[1]) - 1];
                     if(chdir(argument) == -1 ){
                         write(STDERR_FILENO, error_message, strlen(error_message));
                     }else{
                         char s[100];
                         printf("Ubicación después de CD: %s\n", getcwd(s, 100));
                     }
-
 
                 }else{
                     printf("Comando diferente");
@@ -98,4 +82,23 @@ int main(int argc, char *argv[])
     }
 
     return 0;
+}
+
+//Método para separar la línea de comando en un arreglo de palabras
+char** separador(char *lineaComando, char *comandReturn[]){
+    char *word;
+    int count = 0;
+    char *lineCopy = NULL;
+    lineCopy = strdup(lineaComando);
+
+    while ((word = strsep(&lineCopy, " ")) != NULL) {
+        count++;
+    }
+
+    //comandReturn[count];
+    for(int i=0; (word = strsep(&lineaComando, " ")) != NULL; i++ ){
+        comandReturn[i] = word;
+    }
+
+    return comandReturn;
 }

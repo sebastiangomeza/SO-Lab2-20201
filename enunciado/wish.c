@@ -7,13 +7,14 @@
 #include <string.h>
 
 char** separador(char *lineaComando, char **comandReturn);
+void saludo(char **nombre);
 
 int main(int argc, char *argv[])
 {
     char error_message[30] = "An error has occurred\n";
     char *strExit = "exit";
-    char *strCd = "cd ";
-    //int size = 1;
+    char *strCd = "cd";
+    char *strPath = "path";
     //char commandsArguments[size];
     //
     /*
@@ -49,9 +50,14 @@ int main(int argc, char *argv[])
                 char **commandsAndArguments;
                 commandsAndArguments = separador(line, commandsAndArguments);
 
-                if(strcmp(commandsAndArguments[0], strCd)){
+                if(strcmp(commandsAndArguments[0], strCd) == 0){
+                    //char *nombres[2];
+                    //nombres[0]="carlos";
+
+                    //saludo(nombres);
 
                     char *argument = NULL;
+                    //argument[strlen(argument) - 1] = '\0';
                     argument = strdup(commandsAndArguments[1]);
                     printf("word: %s\n", argument);
                     if(chdir(argument) == -1 ){
@@ -61,8 +67,10 @@ int main(int argc, char *argv[])
                         printf("Ubicación después de CD: %s\n", getcwd(s, 100));
                     }
 
+                }else if(strcmp(commandsAndArguments[0], strPath) == 0){
+                    printf("Comando PATH\n");
                 }else{
-                    printf("Comando diferente");
+                    printf("Comando diferente\n");
                 }
 
 
@@ -101,4 +109,8 @@ char** separador(char *lineaComando, char *comandReturn[]){
     }
 
     return comandReturn;
+}
+
+void saludo(char **nombre){
+    printf("Hola %s\n", nombre[0]);
 }

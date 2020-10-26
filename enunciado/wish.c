@@ -19,10 +19,13 @@ int main(int argc, char *argv[])
     //
     /*
     char *mypath[] = {
-        "/bin",
+        "/bin/",
+        "./",
         NULL
         };
-    */
+        */
+        
+    
    
     switch(argc){
     case 1:
@@ -59,7 +62,6 @@ int main(int argc, char *argv[])
                     char *argument = NULL;
                     //argument[strlen(argument) - 1] = '\0';
                     argument = strdup(commandsAndArguments[1]);
-                    printf("word: %s\n", argument);
                     if(chdir(argument) == -1 ){
                         write(STDERR_FILENO, error_message, strlen(error_message));
                     }else{
@@ -70,11 +72,30 @@ int main(int argc, char *argv[])
                 }else if(strcmp(commandsAndArguments[0], strPath) == 0){
                     printf("Comando PATH\n");
                 }else{
-                    printf("Comando diferente\n");
+                    //mypath[1] = commandsAndArguments[0];
+                    //int code = fork();
+                    
+                    //for(int i=0; my; i++){
+                        //char *pathExec = strcat("bonm/", commandsAndArguments[0]);
+                        //printf("Path %s\n", pathExec);
+                        /*
+                        if(fork() == 0){
+                            execv(pathExec, commandsAndArguments);
+                            exit(1);
+                        }*/
+                    //}
+                    
+                    //Esta parte funciona
+                    //Path quemado
+                    
+
+                    if(fork() == 0){
+                        execv("/bin/ls", commandsAndArguments);
+                        exit(1);
+                    }
+                    wait(NULL);
+                    
                 }
-
-
-                printf ("Sebas es puto\n");
             }
 
         }
@@ -106,6 +127,7 @@ char** separador(char *lineaComando, char *comandReturn[]){
     //comandReturn[count];
     for(int i=0; (word = strsep(&lineaComando, " ")) != NULL; i++ ){
         comandReturn[i] = word;
+        comandReturn[i+1] = NULL;
     }
 
     return comandReturn;

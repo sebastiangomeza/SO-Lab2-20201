@@ -59,10 +59,11 @@ int main(int argc, char *argv[])
                 char *word2;
                 char *word3;
                 char *arguments2[100];
-
+                char *file = NULL;
+                char *file2 = NULL;
+                int isRedirection = 0;
                 int error = 0;
                 char *args = strdup(arguments[i]);
-                //char *file[2];
                 for (int j = 0; (word2 = strsep(&args, ">")) != NULL; j++)
                 {
                     if (j == 0)
@@ -71,7 +72,12 @@ int main(int argc, char *argv[])
                     }
                     else if (j == 1)
                     {
-                        //file[0] = strdup(word2);
+                        isRedirection = 1;
+                        file = word2;
+                        if (file == NULL)
+                        {
+                            error = 1;
+                        }
                     }
                     else
                     {
@@ -79,12 +85,46 @@ int main(int argc, char *argv[])
                         break;
                     }
                 }
+                if (isRedirection == 1)
+                {
+                    if (file != NULL)
+                    {
+                        int escrito = 0;
+                        char *word6;
+                        char *word7;
 
-                if (error == 1)
+                        for (int j = 0; (word6 = strsep(&file, " ")) != NULL; j++)
+                        {
+                            for (int k = 0; (word7 = strsep(&word6, "\t")) != NULL; k++)
+                            {
+                                if (strcmp(word7, "") != 0)
+                                {
+
+                                    if (escrito == 0)
+                                    {
+
+                                        escrito = 1;
+                                        file2 = word7;
+                                        j = j + 1;
+                                    }
+                                    else
+                                    {
+                                        error = 1;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (error == 1 || (file2 == NULL && isRedirection == 1))
                 {
                     write(STDERR_FILENO, error_message, strlen(error_message));
                     break;
                 }
+
+                printf("imprimir file 2 porq toca %s\n", file2);
                 //Quito los espacios
                 for (int j = 0; (word2 = strsep(&arguments[i], " ")) != NULL; j++)
                 {
@@ -136,14 +176,30 @@ int main(int argc, char *argv[])
                     {
                         if (arguments2[1] == NULL)
                         {
-                            mypath[0] = "/bin/";
-                            mypath[1] = NULL;
+                            mypath[0] = NULL;
                         }
 
                         for (int k = 1; arguments2[k] != NULL; k++)
                         {
-                            mypath[k - 1] = arguments2[k];
-                            mypath[k] = NULL;
+                            char *palabra = arguments2[k];
+                            char primerc = palabra[0];
+                            char pathAct[200] = "./";
+                            char pathAct2[200] = "";
+                            char *slash = "/";
+                            if (primerc == 47)
+                            {
+                                strcat(pathAct2, arguments2[k]);
+                                strcat(pathAct2, slash);
+                                mypath[k - 1] = pathAct2;
+                                mypath[k] = NULL;
+                            }
+                            else
+                            {
+                                strcat(pathAct, arguments2[k]);
+                                strcat(pathAct, slash);
+                                mypath[k - 1] = pathAct;
+                                mypath[k] = NULL;
+                            }
                         }
                         break;
                     };
@@ -273,15 +329,31 @@ int main(int argc, char *argv[])
                         {
                             if (arguments2[1] == NULL)
                             {
-                                mypath[0] = "/bin/";
-                                mypath[1] = NULL;
-                            }
-                            for (int k = 1; arguments2[k] != NULL; k++)
-                            {
-                                mypath[k - 1] = arguments2[k];
-                                mypath[k] = NULL;
+                                mypath[0] = NULL;
                             }
 
+                            for (int k = 1; arguments2[k] != NULL; k++)
+                            {
+                                char *palabra = arguments2[k];
+                                char primerc = palabra[0];
+                                char pathAct[200] = "./";
+                                char pathAct2[200] = "";
+                                char *slash = "/";
+                                if (primerc == 47)
+                                {
+                                    strcat(pathAct2, arguments2[k]);
+                                    strcat(pathAct2, slash);
+                                    mypath[k - 1] = pathAct2;
+                                    mypath[k] = NULL;
+                                }
+                                else
+                                {
+                                    strcat(pathAct, arguments2[k]);
+                                    strcat(pathAct, slash);
+                                    mypath[k - 1] = pathAct;
+                                    mypath[k] = NULL;
+                                }
+                            }
                             break;
                         };
                     };

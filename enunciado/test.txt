@@ -1,0 +1,4 @@
+path /bin tests
+ls
+p1.sh
+exit

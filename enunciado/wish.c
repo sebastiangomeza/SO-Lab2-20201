@@ -9,9 +9,11 @@
 
 int main(int argc, char *argv[])
 {
-    char *mypath[] = {
-        "/bin/",
-        NULL};
+    char **mypath;
+    char *bin = "/bin/";
+    mypath = (char **)malloc(3 * sizeof(char *));
+    mypath[0] = bin;
+    mypath[1] = NULL;
 
     char error_message[30] = "An error has occurred\n";
 
@@ -209,6 +211,8 @@ int main(int argc, char *argv[])
                         {
                             mypath[0] = NULL;
                         }
+                        free(mypath);
+                        mypath = (char **)malloc(sizeof(char *));
                         for (int k = 1; arguments2[k] != NULL; k++)
                         {
                             char *palabra = strdup(arguments2[k]);
@@ -282,6 +286,7 @@ int main(int argc, char *argv[])
     //Modo batch
     if (argc == 2)
     {
+
         //Leemos el archivo
         FILE *fp = fopen(argv[1], "r");
         if (fp == NULL)
@@ -297,7 +302,8 @@ int main(int argc, char *argv[])
         //Leemos por linea del archivo
         while ((read = getline(&line, &len, fp)) != -1)
         {
-
+            int forks[100];
+            forks[0] = 777;
             if (strcmp(line, "") != 0)
             {
 
@@ -475,6 +481,8 @@ int main(int argc, char *argv[])
                             {
                                 mypath[0] = NULL;
                             }
+                            free(mypath);
+                            mypath = (char **)malloc(sizeof(char *));
 
                             for (int k = 1; arguments2[k] != NULL; k++)
                             {
@@ -509,29 +517,29 @@ int main(int argc, char *argv[])
                         strcat(path, arguments2[0]);
                         if (access(path, F_OK) == 0)
                         {
-                            if (isRedirection == 1)
+                            a = 0;
+                            int rc = fork();
+                            forks[i] = rc;
+                            forks[i + 1] = 777;
+                            if (rc == 0)
                             {
-
-                                a = 0;
-                                if (fork() == 0)
+                                if (isRedirection == 1)
                                 {
+
                                     close(STDOUT_FILENO);
                                     open(file2, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
                                     execvp(path, arguments2);
-                                    return (0);
+                                    exit(0);
+                                }
+
+                                else
+                                {
+
+                                    execv(path, arguments2);
+                                    exit(0);
                                 }
                             }
-                            else
-                            {
-
-                                a = 0;
-                                if (fork() == 0)
-                                {
-                                    execv(path, arguments2);
-                                    return (0);
-                                };
-                            }
-                            wait(NULL);
+                            //wait(NULL);
                             break;
                         }
                         //Validamos si el comando existe en la ruta
@@ -542,6 +550,12 @@ int main(int argc, char *argv[])
                     }
                 };
             };
+            int status;
+            for (int f = 0; forks[f] != 777; f++)
+            {
+                waitpid(forks[f], &status, 0);
+            }
+            wait(NULL);
         };
         fclose(fp);
         fclose(fp2);

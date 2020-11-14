@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
+#include <assert.h>
+#include <sys/wait.h>
 
 int main(int argc, char *argv[])
 {
@@ -68,7 +70,14 @@ int main(int argc, char *argv[])
                 {
                     if (j == 0)
                     {
-                        arguments[i] = word2;
+                        if (strcmp(word2, "") != 0)
+                        {
+                            arguments[i] = word2;
+                        }
+                        else
+                        {
+                            error = 1;
+                        }
                     }
                     else if (j == 1)
                     {
@@ -124,7 +133,6 @@ int main(int argc, char *argv[])
                     break;
                 }
 
-                printf("imprimir file 2 porq toca %s\n", file2);
                 //Quito los espacios
                 for (int j = 0; (word2 = strsep(&arguments[i], " ")) != NULL; j++)
                 {
@@ -210,19 +218,36 @@ int main(int argc, char *argv[])
                 {
                     char *path = strdup(mypath[j]);
                     strcat(path, arguments2[0]);
+                    if (isRedirection == 1)
+                    {
+                        if (access(path, F_OK) == 0)
+                        {
+                            a = 0;
+                            if (fork() == 0)
+                            {
+                                close(STDOUT_FILENO);
+                                open(file2, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+                                execvp(path, arguments2);
+                                return (0);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (access(path, F_OK) == 0)
+                        {
+                            a = 0;
+                            if (fork() == 0)
+                            {
+                                execv(path, arguments2);
+                                return (0);
+                            };
+                        };
+                    }
+                    wait(NULL);
+                    break;
 
                     //Validamos si el comando existe en la ruta
-                    if (access(path, F_OK) == 0)
-                    {
-                        a = 0;
-                        if (fork() == 0)
-                        {
-                            execv(path, arguments2);
-                            return (0);
-                        };
-                        wait(NULL);
-                        break;
-                    };
                 };
                 if (a == 1)
                 {
@@ -239,7 +264,7 @@ int main(int argc, char *argv[])
         FILE *fp = fopen(argv[1], "r");
         if (fp == NULL)
         {
-            printf("wunzip: cannot open file\n");
+            write(STDERR_FILENO, error_message, strlen(error_message));
             exit(1);
         };
         FILE *fp2 = fopen(argv[1], "r");
@@ -278,8 +303,80 @@ int main(int argc, char *argv[])
                     char *word2;
                     char *word3;
                     char *arguments2[100];
-
+                    char *file = NULL;
+                    char *file2 = NULL;
+                    int isRedirection = 0;
+                    int error = 0;
+                    char *args = strdup(arguments[i]);
                     //Quito los espacios
+                    for (int j = 0; (word2 = strsep(&args, ">")) != NULL; j++)
+                    {
+                        if (j == 0)
+                        {
+                            if (strcmp(word2, "") != 0)
+                            {
+                                arguments[i] = word2;
+                            }
+                            else
+                            {
+                                error = 1;
+                            }
+                        }
+                        else if (j == 1)
+                        {
+                            isRedirection = 1;
+                            file = word2;
+                            if (file == NULL)
+                            {
+                                error = 1;
+                            }
+                        }
+                        else
+                        {
+                            error = 1;
+                            break;
+                        }
+                    }
+
+                    if (isRedirection == 1)
+                    {
+                        if (file != NULL)
+                        {
+                            int escrito = 0;
+                            char *word6;
+                            char *word7;
+
+                            for (int j = 0; (word6 = strsep(&file, " ")) != NULL; j++)
+                            {
+                                for (int k = 0; (word7 = strsep(&word6, "\t")) != NULL; k++)
+                                {
+                                    if (strcmp(word7, "") != 0)
+                                    {
+
+                                        if (escrito == 0)
+                                        {
+
+                                            escrito = 1;
+                                            file2 = word7;
+                                            j = j + 1;
+                                        }
+                                        else
+                                        {
+                                            error = 1;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (error == 1 || (file2 == NULL && isRedirection == 1))
+                    {
+                        write(STDERR_FILENO, error_message, strlen(error_message));
+                        break;
+                    }
+
                     for (int j = 0; (word2 = strsep(&arguments[i], " ")) != NULL; j++)
                     {
                         //Quito las tabulaciones
@@ -363,18 +460,36 @@ int main(int argc, char *argv[])
                     {
                         char *path = strdup(mypath[j]);
                         strcat(path, arguments2[0]);
-                        //Validamos si el comando existe en la ruta
-                        if (access(path, F_OK) == 0)
+                        if (isRedirection == 1)
                         {
-                            a = 0;
-                            if (fork() == 0)
+                            if (access(path, F_OK) == 0)
                             {
-                                execv(path, arguments2);
-                                return (0);
+                                a = 0;
+                                if (fork() == 0)
+                                {
+                                    close(STDOUT_FILENO);
+                                    open(file2, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+                                    execvp(path, arguments2);
+                                    return (0);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (access(path, F_OK) == 0)
+                            {
+                                a = 0;
+                                if (fork() == 0)
+                                {
+                                    execv(path, arguments2);
+                                    return (0);
+                                };
                             };
-                            wait(NULL);
-                            break;
-                        };
+                        }
+                        wait(NULL);
+                        break;
+
+                        //Validamos si el comando existe en la ruta
                     };
                     if (a == 1)
                     {

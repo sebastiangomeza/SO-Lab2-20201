@@ -1,0 +1,9 @@
+LinuxTutorial2.pdf
+README.md
+filee.txt
+test-wish.sh
+tests
+tests-out
+whis.c
+wish
+wish.c

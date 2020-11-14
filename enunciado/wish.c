@@ -33,9 +33,32 @@ int main(int argc, char *argv[])
                 write(STDERR_FILENO, error_message, strlen(error_message));
                 continue;
             }
-
             //Eliminar espacio al final
             line[strlen(line) - 1] = '\0';
+            char *extra = strdup(line);
+            char *palabraAux;
+            char *palabraAux2;
+            char *palabraAux3;
+
+            int alguno = 0;
+
+            for (int j = 0; (palabraAux = strsep(&extra, " ")) != NULL; j++)
+            {
+                for (int k = 0; (palabraAux2 = strsep(&palabraAux, "\t")) != NULL; k++)
+                {
+                    for (int k = 0; (palabraAux3 = strsep(&palabraAux2, "&")) != NULL; k++)
+                    {
+                        if (strcmp(palabraAux3, "") != 0)
+                        {
+                            alguno = 1;
+                        }
+                    }
+                }
+            }
+            if (alguno == 0)
+            {
+                continue;
+            }
 
             //Guardar cada comando en una matriz
             char *word;
@@ -186,29 +209,29 @@ int main(int argc, char *argv[])
                         {
                             mypath[0] = NULL;
                         }
-
                         for (int k = 1; arguments2[k] != NULL; k++)
                         {
-                            char *palabra = arguments2[k];
-                            char primerc = palabra[0];
+                            char *palabra = strdup(arguments2[k]);
                             char pathAct[200] = "./";
                             char pathAct2[200] = "";
+                            char *auxxx;
                             char *slash = "/";
-                            if (primerc == 47)
+                            if (palabra[0] == 47)
                             {
                                 strcat(pathAct2, arguments2[k]);
                                 strcat(pathAct2, slash);
-                                mypath[k - 1] = pathAct2;
-                                mypath[k] = NULL;
+                                auxxx = strdup(pathAct2);
                             }
                             else
                             {
                                 strcat(pathAct, arguments2[k]);
                                 strcat(pathAct, slash);
-                                mypath[k - 1] = pathAct;
-                                mypath[k] = NULL;
+                                auxxx = strdup(pathAct);
                             }
+                            mypath[k - 1] = strdup(auxxx);
+                            mypath[k] = NULL;
                         }
+
                         break;
                     };
                 };
@@ -218,10 +241,11 @@ int main(int argc, char *argv[])
                 {
                     char *path = strdup(mypath[j]);
                     strcat(path, arguments2[0]);
-                    if (isRedirection == 1)
+                    if (access(path, F_OK) == 0)
                     {
-                        if (access(path, F_OK) == 0)
+                        if (isRedirection == 1)
                         {
+
                             a = 0;
                             if (fork() == 0)
                             {
@@ -231,21 +255,19 @@ int main(int argc, char *argv[])
                                 return (0);
                             }
                         }
-                    }
-                    else
-                    {
-                        if (access(path, F_OK) == 0)
+                        else
                         {
+
                             a = 0;
                             if (fork() == 0)
                             {
                                 execv(path, arguments2);
                                 return (0);
                             };
-                        };
+                        }
+                        wait(NULL);
+                        break;
                     }
-                    wait(NULL);
-                    break;
 
                     //Validamos si el comando existe en la ruta
                 };
@@ -275,10 +297,35 @@ int main(int argc, char *argv[])
         //Leemos por linea del archivo
         while ((read = getline(&line, &len, fp)) != -1)
         {
+
             if (strcmp(line, "") != 0)
             {
 
                 line[strlen(line) - 1] = '\0';
+                char *extra = strdup(line);
+                char *palabraAux;
+                char *palabraAux2;
+                char *palabraAux3;
+
+                int alguno = 0;
+
+                for (int j = 0; (palabraAux = strsep(&extra, " ")) != NULL; j++)
+                {
+                    for (int k = 0; (palabraAux2 = strsep(&palabraAux, "\t")) != NULL; k++)
+                    {
+                        for (int k = 0; (palabraAux3 = strsep(&palabraAux2, "&")) != NULL; k++)
+                        {
+                            if (strcmp(palabraAux3, "") != 0)
+                            {
+                                alguno = 1;
+                            }
+                        }
+                    }
+                }
+                if (alguno == 0)
+                {
+                    continue;
+                }
                 //Guardar cada comando en una matriz
                 char *word;
                 char *arguments[100];
@@ -431,25 +478,25 @@ int main(int argc, char *argv[])
 
                             for (int k = 1; arguments2[k] != NULL; k++)
                             {
-                                char *palabra = arguments2[k];
-                                char primerc = palabra[0];
+                                char *palabra = strdup(arguments2[k]);
                                 char pathAct[200] = "./";
                                 char pathAct2[200] = "";
+                                char *auxxx;
                                 char *slash = "/";
-                                if (primerc == 47)
+                                if (palabra[0] == 47)
                                 {
                                     strcat(pathAct2, arguments2[k]);
                                     strcat(pathAct2, slash);
-                                    mypath[k - 1] = pathAct2;
-                                    mypath[k] = NULL;
+                                    auxxx = strdup(pathAct2);
                                 }
                                 else
                                 {
                                     strcat(pathAct, arguments2[k]);
                                     strcat(pathAct, slash);
-                                    mypath[k - 1] = pathAct;
-                                    mypath[k] = NULL;
+                                    auxxx = strdup(pathAct);
                                 }
+                                mypath[k - 1] = strdup(auxxx);
+                                mypath[k] = NULL;
                             }
                             break;
                         };
@@ -460,10 +507,11 @@ int main(int argc, char *argv[])
                     {
                         char *path = strdup(mypath[j]);
                         strcat(path, arguments2[0]);
-                        if (isRedirection == 1)
+                        if (access(path, F_OK) == 0)
                         {
-                            if (access(path, F_OK) == 0)
+                            if (isRedirection == 1)
                             {
+
                                 a = 0;
                                 if (fork() == 0)
                                 {
@@ -473,22 +521,19 @@ int main(int argc, char *argv[])
                                     return (0);
                                 }
                             }
-                        }
-                        else
-                        {
-                            if (access(path, F_OK) == 0)
+                            else
                             {
+
                                 a = 0;
                                 if (fork() == 0)
                                 {
                                     execv(path, arguments2);
                                     return (0);
                                 };
-                            };
+                            }
+                            wait(NULL);
+                            break;
                         }
-                        wait(NULL);
-                        break;
-
                         //Validamos si el comando existe en la ruta
                     };
                     if (a == 1)

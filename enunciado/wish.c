@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
             // metodo: validaErrorGetLine
             char *line = tomaLineaEntrada();
             //Eliminar espacio al final
-            line[strlen(line) - 1] = '\0';
+            //line[strlen(line) - 1] = '\0';
             char *extra = strdup(line);
             char *palabraAux;
             char *palabraAux2;
@@ -572,6 +572,7 @@ char* tomaLineaEntrada(){
         write(STDERR_FILENO, error_message, strlen(error_message));
         //continue;
     }
+    line[strlen(line) - 1] = '\0';
     return line;
 }
             

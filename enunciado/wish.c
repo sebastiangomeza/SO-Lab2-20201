@@ -11,6 +11,8 @@ char* tomaLineaEntrada();
 int validaAmperSolo(char *linea);
 void modoBatch(char *argv[], char **mypath);
 
+char error_message[30] = "An error has occurred\n";
+
 int main(int argc, char *argv[])
 {
     char **mypath;
@@ -18,8 +20,6 @@ int main(int argc, char *argv[])
     mypath = (char **)malloc(3 * sizeof(char *));
     mypath[0] = bin;
     mypath[1] = NULL;
-
-    char error_message[30] = "An error has occurred\n";
 
     //Modo interactivo
     if (argc == 1)
@@ -273,7 +273,6 @@ char* tomaLineaEntrada(){
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-    char error_message[30] = "An error has occurred\n";
     if ((read = getline(&line, &len, stdin)) == -1)
     {
         write(STDERR_FILENO, error_message, strlen(error_message));
@@ -310,9 +309,6 @@ int validaAmperSolo(char *linea){
 }
 
 void modoBatch(char *argv[], char **mypath){
-
-    char error_message[30] = "An error has occurred\n";
-
     //Leemos el archivo
     FILE *fp = fopen(argv[1], "r");
     if (fp == NULL)

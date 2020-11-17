@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 
 char* tomaLineaEntrada();
+int validaAmperSolo(char *linea);
 
 int main(int argc, char *argv[])
 {
@@ -28,31 +29,10 @@ int main(int argc, char *argv[])
             //Wait for input
             printf("prompt> ");
             //metodo: validaErrorGetLine
-            // metodo: validaErrorGetLine
             char *line = tomaLineaEntrada();
-            //Eliminar espacio al final
-            //line[strlen(line) - 1] = '\0';
-            char *extra = strdup(line);
-            char *palabraAux;
-            char *palabraAux2;
-            char *palabraAux3;
 
-            int alguno = 0;
-
-            for (int j = 0; (palabraAux = strsep(&extra, " ")) != NULL; j++)
-            {
-                for (int k = 0; (palabraAux2 = strsep(&palabraAux, "\t")) != NULL; k++)
-                {
-                    for (int k = 0; (palabraAux3 = strsep(&palabraAux2, "&")) != NULL; k++)
-                    {
-                        if (strcmp(palabraAux3, "") != 0)
-                        {
-                            alguno = 1;
-                        }
-                    }
-                }
-            }
-            if (alguno == 0)
+            //Metodo: validaAmperSolo 
+            if (validaAmperSolo(line) == 0)
             {
                 continue;
             }
@@ -301,29 +281,9 @@ int main(int argc, char *argv[])
             forks[0] = 777;
             if (strcmp(line, "") != 0)
             {
-
                 line[strlen(line) - 1] = '\0';
-                char *extra = strdup(line);
-                char *palabraAux;
-                char *palabraAux2;
-                char *palabraAux3;
-
-                int alguno = 0;
-
-                for (int j = 0; (palabraAux = strsep(&extra, " ")) != NULL; j++)
-                {
-                    for (int k = 0; (palabraAux2 = strsep(&palabraAux, "\t")) != NULL; k++)
-                    {
-                        for (int k = 0; (palabraAux3 = strsep(&palabraAux2, "&")) != NULL; k++)
-                        {
-                            if (strcmp(palabraAux3, "") != 0)
-                            {
-                                alguno = 1;
-                            }
-                        }
-                    }
-                }
-                if (alguno == 0)
+                //Metodo: validaAmperSolo 
+                if (validaAmperSolo(line) == 0)
                 {
                     continue;
                 }
@@ -574,5 +534,31 @@ char* tomaLineaEntrada(){
     }
     line[strlen(line) - 1] = '\0';
     return line;
+}
+
+
+int validaAmperSolo(char *linea){
+    char *extra = strdup(linea);
+    char *palabraAux;
+    char *palabraAux2;
+    char *palabraAux3;
+
+    int alguno = 0;
+
+    for (int j = 0; (palabraAux = strsep(&extra, " ")) != NULL; j++)
+    {
+        for (int k = 0; (palabraAux2 = strsep(&palabraAux, "\t")) != NULL; k++)
+        {
+            for (int k = 0; (palabraAux3 = strsep(&palabraAux2, "&")) != NULL; k++)
+            {
+                if (strcmp(palabraAux3, "") != 0)
+                {
+                    alguno = 1;
+                }
+            }
+        }
+    }
+
+    return alguno;
 }
             

@@ -10,6 +10,7 @@
 char* tomaLineaEntrada();
 int validaAmperSolo(char *linea);
 void modoBatch(char *argv[], char **mypath);
+void ejecutaRedireccion(char *path, char *file, char *arguments[100]);
 
 char error_message[30] = "An error has occurred\n";
 
@@ -227,10 +228,9 @@ int main(int argc, char *argv[])
 
                             a = 0;
                             if (fork() == 0)
-                            {
-                                close(STDOUT_FILENO);
-                                open(file2, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
-                                execvp(path, arguments2);
+                            {   
+                                ejecutaRedireccion(path, file2, arguments2);
+                                // metodo: ejecutaRedireccion 
                                 return (0);
                             }
                         }
@@ -306,6 +306,12 @@ int validaAmperSolo(char *linea){
     }
 
     return alguno;
+}
+
+void ejecutaRedireccion(char *path, char *file, char *arguments[100]){
+    close(STDOUT_FILENO);
+    open(file, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
+    execvp(path, arguments);
 }
 
 void modoBatch(char *argv[], char **mypath){
@@ -528,9 +534,7 @@ void modoBatch(char *argv[], char **mypath){
                             if (isRedirection == 1)
                             {
 
-                                close(STDOUT_FILENO);
-                                open(file2, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
-                                execvp(path, arguments2);
+                                ejecutaRedireccion(path, file2, arguments2);
                                 exit(0);
                             }
 

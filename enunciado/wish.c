@@ -7,6 +7,8 @@
 #include <assert.h>
 #include <sys/wait.h>
 
+char* tomaLineaEntrada();
+
 int main(int argc, char *argv[])
 {
     char **mypath;
@@ -25,16 +27,9 @@ int main(int argc, char *argv[])
         {
             //Wait for input
             printf("prompt> ");
-            char *line = NULL;
-            size_t len = 0;
-            ssize_t read;
-
-            //Leemos por linea
-            if ((read = getline(&line, &len, stdin)) == -1)
-            {
-                write(STDERR_FILENO, error_message, strlen(error_message));
-                continue;
-            }
+            //metodo: validaErrorGetLine
+            // metodo: validaErrorGetLine
+            char *line = tomaLineaEntrada();
             //Eliminar espacio al final
             line[strlen(line) - 1] = '\0';
             char *extra = strdup(line);
@@ -566,3 +561,17 @@ int main(int argc, char *argv[])
     write(STDERR_FILENO, error_message, strlen(error_message));
     exit(1);
 }
+
+char* tomaLineaEntrada(){
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    char error_message[30] = "An error has occurred\n";
+    if ((read = getline(&line, &len, stdin)) == -1)
+    {
+        write(STDERR_FILENO, error_message, strlen(error_message));
+        //continue;
+    }
+    return line;
+}
+            
